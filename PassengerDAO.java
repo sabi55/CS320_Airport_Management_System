@@ -1,10 +1,12 @@
+import GUI.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 public class PassengerDAO {
     public void addPassenger(String firstName, String lastName, String passportNumber, String passengerType) {
-        String insertPassengerSQL = "INSERT INTO Passenger (first_name, last_name, passport_number, passenger_type) VALUES (?, ?, ?, ?)";
+        String insertPassengerSQL = "INSERT INTO Modules.Passenger (first_name, last_name, passport_number, passenger_type) VALUES (?, ?, ?, ?)";
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(insertPassengerSQL)) {
 
