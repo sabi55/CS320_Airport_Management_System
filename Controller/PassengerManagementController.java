@@ -1,6 +1,9 @@
 package Controller;
 
 import Modules.AirportPassenger;
+import Modules.BusinessPassenger;
+import Modules.EconomyPassenger;
+import Modules.FamilyPassenger;
 import Systems.PassengerManagementSystem;
 
 import java.util.ArrayList;

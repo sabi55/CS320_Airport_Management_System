@@ -1,5 +1,7 @@
 package Systems;
 
+import Modules.AirportPassenger;
+
 import java.util.ArrayList;
 
 public class PassengerManagementSystem {

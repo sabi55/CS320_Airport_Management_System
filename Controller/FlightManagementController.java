@@ -1,14 +1,11 @@
 package Controller;
 
-import Modules.AirportPassenger;
-import Modules.BusinessPassenger;
-import Modules.Flight;
-import Modules.Ticket;
+import Modules.*;
 import Systems.FlightManagementSystem;
+import GUI.*;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;

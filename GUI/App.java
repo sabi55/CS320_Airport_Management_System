@@ -5,7 +5,7 @@ import Systems.AirportManagementSystem;
 import javax.swing.SwingUtilities;
 
 public class App {
-	static AirportManagementSystem airportManagementSystem;
+	public static AirportManagementSystem airportManagementSystem;
 	public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
