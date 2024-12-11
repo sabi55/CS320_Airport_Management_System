@@ -20,7 +20,7 @@ public class PassengerManagementController<T, E> implements ControllerInterface<
 
 
     @Override
-    public void updateData(AirportPassenger passenger,Integer index) {
+    public void updateData(AirportPassenger passenger, Integer index) {
         // TODO Auto-generated method stub
         ArrayList<AirportPassenger> passengers = passengerManagementSystem.getPassengerList();
         passengers.set(index, passenger);
