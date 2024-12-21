@@ -87,7 +87,18 @@ public class ProjectGUI extends JFrame {
             tabbedPane.addTab("Modules.Plane Management System", null, planeTabPanel, "Manage Planes");
         }
 
-        frame.getContentPane().add(tabbedPane);
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.addActionListener(e -> {
+        	frame.dispose();
+        	showLoginScreen();
+        });
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new BorderLayout());
+        bottomPanel.add(logoutButton, BorderLayout.EAST);
+
+        frame.getContentPane().add(bottomPanel, BorderLayout.SOUTH);
+        frame.getContentPane().add(tabbedPane, BorderLayout.CENTER);
         frame.setVisible(true);
     }
 }
