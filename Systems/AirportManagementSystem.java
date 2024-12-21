@@ -7,12 +7,13 @@ import Modules.Runway;
 
 import java.util.ArrayList;
 
+
 import javax.swing.JOptionPane;
 
 public class AirportManagementSystem {
 
     private Airport airport;
-    public PassengerManagementSystem passengerManagementSystem;
+    public  PassengerManagementSystem passengerManagementSystem;
 
     public AirportManagementSystem() {
         this.airport = new Airport();
@@ -41,11 +42,11 @@ public class AirportManagementSystem {
                 }
             }
             else {
-                JOptionPane.showMessageDialog(null, "Wrong Modules.Hangar ID", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Wrong Hangar ID", "Error", JOptionPane.ERROR_MESSAGE);
 
             }
         }catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Hangar id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Hangar id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -57,31 +58,51 @@ public class AirportManagementSystem {
 
     public void reserveHangar(PlaneManagementSystem pms, String hangarId, String planeId) {
         try {
-            int hangarCode = Integer.valueOf(hangarId);
-            if (! planeId.isEmpty()) {
-                ArrayList<Hangar> hangars = airport.getHangars();
-                Hangar hangar=findHangar(hangars,hangarCode);
-                if (hangar!=null) {
-                    if (hangar.getPlane() == null) {
-                        Plane plane = pms.getPlaneList().get(Integer.valueOf(planeId));
-                        hangar.setPlane(plane);
-                        airport.setHangars(hangars);
-                        JOptionPane.showMessageDialog(null, "Modules.Hangar " + hangarId+ " is reserved by " + plane.getPlaneId(),"Info",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Selected Modules.Hangar is not available", "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+            int hangarCode = Integer.parseInt(hangarId);
 
-            } else {
-                JOptionPane.showMessageDialog(null, "Select a plane and type Modules.Hangar Id", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+            if (planeId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Plane ID must not be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Hangar id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
-        }
 
+            ArrayList<Plane> planes = pms.getPlaneList();
+            System.out.println("Planes in system: " + planes);
+
+            Plane plane = null;
+            for (Plane p : planes) {
+                System.out.println("Checking plane: " + p.getPlaneId());
+                if (String.valueOf(p.getPlaneId()).equals(planeId)) {
+                    plane = p;
+                    break;
+                }
+            }
+
+            if (plane == null) {
+                JOptionPane.showMessageDialog(null, "Plane ID not found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            ArrayList<Hangar> hangars = airport.getHangars();
+            Hangar hangar = findHangar(hangars, hangarCode);
+            if (hangar == null) {
+                JOptionPane.showMessageDialog(null, "Invalid Hangar ID", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (hangar.getPlane() != null) {
+                JOptionPane.showMessageDialog(null, "Selected Hangar is already reserved", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            hangar.setPlane(plane);
+            airport.setHangars(hangars);
+
+            JOptionPane.showMessageDialog(null, "Hangar " + hangarId + " is reserved by " + planeId, "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Hangar ID must be a number", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     public void removeRunway(String runwayId) {
         ArrayList<Runway> runways = airport.getRunways();
@@ -98,11 +119,11 @@ public class AirportManagementSystem {
                 }
             }
             else {
-                JOptionPane.showMessageDialog(null, "Wrong Modules.Runway ID", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Wrong Runway ID", "Error", JOptionPane.ERROR_MESSAGE);
 
             }
         }catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Runway id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Runway id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -123,31 +144,48 @@ public class AirportManagementSystem {
 
     public void reserveRunway(PlaneManagementSystem pms, String runwayId, String planeId) {
         try {
-            int runwayCode = Integer.valueOf(runwayId);
-            if (! planeId.isEmpty()) {
-                ArrayList<Runway> runways = airport.getRunways();
-                Runway runway=findRunway(runways,runwayCode);
-                if (runway!=null) {
-                    if (runway.getPlane() == null) {
-                        Plane plane = pms.getPlaneList().get(Integer.valueOf(planeId));
-                        runway.setPlane(plane);
-                        airport.setRunways(runways);
-                        JOptionPane.showMessageDialog(null, "Modules.Runway " + runwayId+ " is reserved by " + plane.getPlaneId(),"Info",
-                                JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(null, "Selected Modules.Runway is not available", "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                }
+            int runwayCode = Integer.parseInt(runwayId);
 
-            } else {
-                JOptionPane.showMessageDialog(null, "Select a plane and type Modules.Runway Id", "Error",
-                        JOptionPane.ERROR_MESSAGE);
+            if (planeId.isEmpty()) {
+                JOptionPane.showMessageDialog(null, "Plane ID must not be empty", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-        } catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Runway id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
-        }
 
+            ArrayList<Plane> planes = pms.getPlaneList();
+            ArrayList<Runway> runways = airport.getRunways();
+
+            Plane plane = null;
+            for (Plane p : planes) {
+                if (p.getPlaneId().equals(planeId)) {
+                    plane = p;
+                    break;
+                }
+            }
+
+            if (plane == null) {
+                JOptionPane.showMessageDialog(null, "Plane ID not found", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            Runway runway = findRunway(runways, runwayCode);
+            if (runway == null) {
+                JOptionPane.showMessageDialog(null, "Invalid Runway ID", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (runway.getPlane() != null) {
+                JOptionPane.showMessageDialog(null, "Selected Runway is already reserved", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            runway.setPlane(plane);
+            airport.setRunways(runways);
+            JOptionPane.showMessageDialog(null, "Runway " + runwayId + " is reserved by " + planeId, "Info",
+                    JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(null, "Runway ID must be a number", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     public void resetHangar(PlaneManagementSystem pms, String hangarId) {
@@ -156,32 +194,32 @@ public class AirportManagementSystem {
             int hangarCode = Integer.valueOf(hangarId);
             Hangar hangar=findHangar(hangars, hangarCode);
             if (hangar.getPlane()==null) {
-                JOptionPane.showMessageDialog(null, "Modules.Hangar id already empty", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Hangar id already empty", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
             else {
                 hangar.setPlane(null);
                 airport.setHangars(hangars);
             }
         } catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Hangar id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Hangar id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
         }
 
     }
 
-    public void resetRunway(PlaneManagementSystem pms, String runwayId) {
+    public void resetRunway(PlaneManagementSystem pms,String runwayId) {
         try {
             ArrayList<Runway> runways = airport.getRunways();
             int runwayCode = Integer.valueOf(runwayId);
             Runway runway=findRunway(runways, runwayCode);
             if (runway.getPlane()==null) {
-                JOptionPane.showMessageDialog(null, "Modules.Runway id already empty", "Info", JOptionPane.INFORMATION_MESSAGE);
+                JOptionPane.showMessageDialog(null, "Runway id already empty", "Info", JOptionPane.INFORMATION_MESSAGE);
             }
             else {
                 runway.setPlane(null);
                 airport.setRunways(runways);
             }
         } catch (NumberFormatException e1) {
-            JOptionPane.showMessageDialog(null, "Modules.Runway id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Runway id must  be a number", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
