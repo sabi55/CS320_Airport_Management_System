@@ -77,11 +77,11 @@ public class ProjectGUI extends JFrame {
         JPanel flightTabPanel = flightManagementGUI.getPanel();
         tabbedPane.addTab("Modules.Flight Management System", null, flightTabPanel, "Manage Flights");
 
-        if (!role.equals("customer")) {
-            PassengerManagementGUI passengerManagementGUI = new PassengerManagementGUI();
+        PassengerManagementGUI passengerManagementGUI = new PassengerManagementGUI();
             JPanel passengerTabPanel = passengerManagementGUI.getPanel();
             tabbedPane.addTab("Modules.Passenger Management System", null, passengerTabPanel, "Manage Passengers");
 
+        if (!role.equals("customer")) {
             PlaneManagementGUI planeManagementGUI = new PlaneManagementGUI();
             JPanel planeTabPanel = planeManagementGUI.getPanel();
             tabbedPane.addTab("Modules.Plane Management System", null, planeTabPanel, "Manage Planes");
