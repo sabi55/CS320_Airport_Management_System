@@ -1,6 +1,7 @@
 package GUI;
 
 import Controller.FlightManagementController;
+import GUI.DatabaseConnection;
 import Modules.Flight;
 import Systems.FlightManagementSystem;
 
@@ -36,6 +37,7 @@ public class FlightManagementGUI {
     private JTextField passengerId;
     private JTextField ticketPrice;
     private JTextField selectTicket;
+    private DefaultTableModel ticketsModel;
 
     public FlightManagementGUI() {
         this.flightManagementSystem = new FlightManagementSystem();
@@ -74,23 +76,30 @@ public class FlightManagementGUI {
         selectRow.setBounds(21, 190, 96, 19);
         selectRow.setVisible(false);
 
-        // Create the table model
+        // Create the flights table model
         String[] columnNames = { "Departure Location", "Landing Location", "Departure Date", "Landing Date", "Capacity" };
         DefaultTableModel model = new DefaultTableModel(columnNames, 0);
 
-        // Refresh the table data from the database
+        // Create the tickets table model
+        String[] ticketColumns = { "Ticket ID", "Passenger ID", "Flight ID", "Price" };
+        ticketsModel = new DefaultTableModel(ticketColumns, 0);
+
         refreshTable(model);
 
-        // Create the table
+        // Create the flights table
         JTable table = new JTable(model);
-
         table.setBounds(426, 49, 329, 165);
         panel.add(table);
 
-        // Submit button
-        JButton addButton = new JButton("Add Modules.Flight");
-        addButton.addActionListener(new ActionListener() {
+        // Create and setup the tickets table
+        ticketsTable = new JTable(ticketsModel);
+        ticketsTable.setBounds(797, 49, 268, 165);
+        panel.add(ticketsTable);
+        refreshTicketsTable();
 
+        // Submit button
+        JButton addButton = new JButton("Add Flight");
+        addButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -106,7 +115,7 @@ public class FlightManagementGUI {
                         preparedStatement.setDate(4, new java.sql.Date(departDate.getTime()));
                         preparedStatement.setDate(5, new java.sql.Date(landDate.getTime()));
                         preparedStatement.executeUpdate();
-                        JOptionPane.showMessageDialog(panel, "Modules.Flight added successfully!");
+                        JOptionPane.showMessageDialog(panel, "Flight added successfully!");
                     } catch (SQLException ex) {
                         ex.printStackTrace();
                         JOptionPane.showMessageDialog(panel, "Error adding flight: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -121,14 +130,12 @@ public class FlightManagementGUI {
                 } catch (ParseException e1) {
                     e1.printStackTrace();
                 }
-
             }
         });
 
         addButton.setBounds(10, 143, 164, 33);
         panel.setLayout(null);
 
-        // Add components to the panel
         panel.add(label1);
         panel.add(departureLocation);
         panel.add(label2);
@@ -142,9 +149,8 @@ public class FlightManagementGUI {
         panel.add(addButton);
         panel.add(selectRow);
 
-        JButton removeButton = new JButton("Remove Modules.Flight");
+        JButton removeButton = new JButton("Remove Flight");
         removeButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 String flightIdStr = selectRow.getText();
@@ -160,9 +166,9 @@ public class FlightManagementGUI {
                     preparedStatement.setInt(1, flightId);
                     int rowsAffected = preparedStatement.executeUpdate();
                     if (rowsAffected > 0) {
-                        JOptionPane.showMessageDialog(panel, "Modules.Flight deleted successfully!");
+                        JOptionPane.showMessageDialog(panel, "Flight deleted successfully!");
                     } else {
-                        JOptionPane.showMessageDialog(panel, "Modules.Flight not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(panel, "Flight not found.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
@@ -177,10 +183,6 @@ public class FlightManagementGUI {
         removeButton.setBounds(208, 143, 164, 33);
         panel.add(removeButton);
 
-        ticketsTable = new JTable();
-        ticketsTable.setBounds(797, 49, 268, 165);
-        panel.add(ticketsTable);
-
         JLabel lblNewLabel = new JLabel("Current Flights");
         lblNewLabel.setBounds(426, 20, 123, 19);
         panel.add(lblNewLabel);
@@ -189,11 +191,11 @@ public class FlightManagementGUI {
         lblManageTickets.setBounds(797, 20, 123, 19);
         panel.add(lblManageTickets);
 
-        JLabel lblNewLabel_1 = new JLabel("Modules.Passenger ID");
+        JLabel lblNewLabel_1 = new JLabel("Passenger ID");
         lblNewLabel_1.setBounds(797, 239, 96, 19);
         panel.add(lblNewLabel_1);
 
-        JLabel lblNewLabel_1_1 = new JLabel("Modules.Ticket Price");
+        JLabel lblNewLabel_1_1 = new JLabel("Ticket Price");
         lblNewLabel_1_1.setBounds(907, 239, 96, 19);
         panel.add(lblNewLabel_1_1);
 
@@ -207,11 +209,10 @@ public class FlightManagementGUI {
         ticketPrice.setBounds(907, 268, 96, 28);
         panel.add(ticketPrice);
 
-        JButton btnBuyTicket = new JButton("Buy Modules.Ticket");
+        JButton btnBuyTicket = new JButton("Buy Ticket");
         btnBuyTicket.setBounds(797, 324, 100, 21);
         panel.add(btnBuyTicket);
         btnBuyTicket.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 String flightIdStr = selectRow.getText();
@@ -234,7 +235,8 @@ public class FlightManagementGUI {
                     preparedStatement.setInt(2, passengerId);
                     preparedStatement.setFloat(3, price);
                     preparedStatement.executeUpdate();
-                    JOptionPane.showMessageDialog(panel, "Modules.Ticket purchased successfully!");
+                    JOptionPane.showMessageDialog(panel, "Ticket purchased successfully!");
+                    refreshTicketsTable(); // Refresh tickets table after purchase
                 } catch (SQLException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(panel, "Error buying ticket: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
@@ -242,11 +244,10 @@ public class FlightManagementGUI {
             }
         });
 
-        JButton btnCancelTicket = new JButton("Cancel Modules.Ticket");
+        JButton btnCancelTicket = new JButton("Cancel Ticket");
         btnCancelTicket.setBounds(907, 324, 116, 21);
         panel.add(btnCancelTicket);
         btnCancelTicket.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 String ticketIdStr = selectTicket.getText();
@@ -262,9 +263,10 @@ public class FlightManagementGUI {
                     preparedStatement.setInt(1, ticketId);
                     int rowsAffected = preparedStatement.executeUpdate();
                     if (rowsAffected > 0) {
-                        JOptionPane.showMessageDialog(panel, "Modules.Ticket canceled successfully!");
+                        JOptionPane.showMessageDialog(panel, "Ticket canceled successfully!");
+                        refreshTicketsTable(); // Refresh tickets table after cancellation
                     } else {
-                        JOptionPane.showMessageDialog(panel, "Modules.Ticket not found.", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(panel, "Ticket not found.", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 } catch (SQLException ex) {
                     ex.printStackTrace();
@@ -272,26 +274,24 @@ public class FlightManagementGUI {
                 }
             }
         });
+
         selectTicket = new JTextField();
         selectTicket.setBounds(927, 20, 96, 19);
         panel.add(selectTicket);
         selectTicket.setColumns(10);
 
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     int selectedRow = table.getSelectedRow();
                     if (selectedRow >= 0) {
-                        // Get the values from the selected row
                         String deptLocation = (String) table.getValueAt(selectedRow, 0);
                         String landLocation = (String) table.getValueAt(selectedRow, 1);
                         String deptDate = (String) table.getValueAt(selectedRow, 2);
                         String landDate = (String) table.getValueAt(selectedRow, 3);
                         int cap = Integer.parseInt(table.getValueAt(selectedRow, 4).toString());
 
-                        // Update the input fields with the selected values
                         departureLocation.setText(deptLocation);
                         landingLocation.setText(landLocation);
                         departureDate.setText(deptDate);
@@ -304,14 +304,12 @@ public class FlightManagementGUI {
         });
 
         ticketsTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (!e.getValueIsAdjusting()) {
                     int selectedTicket = ticketsTable.getSelectedRow();
                     if (selectedTicket >= 0) {
-                        // Get the values from the selected row
-                        selectTicket.setText(String.valueOf(selectedTicket));
+                        selectTicket.setText(ticketsTable.getValueAt(selectedTicket, 0).toString());
                         passengerId.setText(ticketsTable.getValueAt(selectedTicket, 1).toString());
                     }
                 }
@@ -340,6 +338,25 @@ public class FlightManagementGUI {
         } catch (SQLException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(panel, "Error loading flights: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void refreshTicketsTable() {
+        ticketsModel.setRowCount(0);
+        String selectTicketsSQL = "SELECT * FROM tickets";
+        try (Connection connection = DatabaseConnection.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(selectTicketsSQL);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
+            while (resultSet.next()) {
+                int ticketId = resultSet.getInt("id");
+                int passengerId = resultSet.getInt("passenger_id");
+                int flightId = resultSet.getInt("flight_id");
+                float price = resultSet.getFloat("price");
+                ticketsModel.addRow(new Object[]{ticketId, passengerId, flightId, price});
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(panel, "Error loading tickets: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }
